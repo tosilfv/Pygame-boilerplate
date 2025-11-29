@@ -30,6 +30,16 @@ sky_surf = pygame.image.load(
 ground_pos = (0, 300)
 sky_pos = (0, 0)
 
+# Player Surface
+player_surf = pygame.image.load(
+            "".join(
+                [os.path.dirname(__file__), "/graphics/player/"
+                "player_stand.png"]
+                )).convert_alpha()
+
+# Player Position
+player_pos = (100, 216)
+
 # Game Loop
 while True:
     for evt in pygame.event.get():
@@ -39,5 +49,6 @@ while True:
 
     screen.scr.blit(sky_surf, sky_pos)
     screen.scr.blit(ground_surf, ground_pos)
+    screen.scr.blit(player_surf, player_pos)
     pygame.display.update()
     screen.clock.tick(screen.framerate)
