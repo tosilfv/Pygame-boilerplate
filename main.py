@@ -37,8 +37,8 @@ player_surf = pygame.image.load(
                 "player_stand.png"]
                 )).convert_alpha()
 
-# Player Position
-player_pos = (100, 216)
+# Player Rectangle
+player_rect = player_surf.get_rect(midbottom = (100, 300))
 
 # Game Loop
 while True:
@@ -49,6 +49,6 @@ while True:
 
     screen.scr.blit(sky_surf, sky_pos)
     screen.scr.blit(ground_surf, ground_pos)
-    screen.scr.blit(player_surf, player_pos)
+    screen.scr.blit(player_surf, player_rect)
     pygame.display.update()
     screen.clock.tick(screen.framerate)
