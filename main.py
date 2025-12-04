@@ -3,21 +3,26 @@ import os
 from sys import exit
 
 # Constants
-FPS = 60
+CAPTION = "Pygame"
+GROUND_LEVEL = 300
+FPS = 60  # Frames per second
 GROUND_X = 0
-GROUND_Y = 300
+GROUND_Y = GROUND_LEVEL
+JUMP_HEIGHT = -20
+ONE = 1
 PLAYER_X = 100
-PLAYER_Y = 300
+PLAYER_Y = GROUND_LEVEL
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
 SKY_X = 0
 SKY_Y = 0
+ZERO = 0
 
 # Variables
 running = True
 
-# Load Images
-def load_image(path, default_color=(255, 0, 0), default_size=(100, 100)):
+# Load Image
+def load_image(path, default_color=(ZERO, 255, ZERO), default_size=(100, 100)):
     try:
         image = pygame.image.load(path).convert_alpha()
         return image
@@ -35,7 +40,7 @@ class Screen():
     def __init__(self, width, height, caption):
         self.scr = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
-        self.framerate = FPS  # 1/[s]
+        self.framerate = FPS
         pygame.display.set_caption(caption)
 
 # Background
@@ -48,19 +53,16 @@ class Background():
         self.sky_x = sky_x
         self.sky_y = sky_y
 
-        try:
-            self.ground_surf = load_image(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "graphics",
-                    "ground.png"))
-            self.sky_surf = load_image(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "graphics",
-                    "sky.png"))
-        except FileNotFoundError:
-            print("Background files not found")
+        self.ground_surf = load_image(
+            os.path.join(
+                os.path.dirname(__file__),
+                "graphics",
+                "ground.png"))
+        self.sky_surf = load_image(
+            os.path.join(
+                os.path.dirname(__file__),
+                "graphics",
+                "sky.png"))
 
     def draw(self):
         self.screen.scr.blit(self.ground_surf, (self.ground_x, self.ground_y))
@@ -69,31 +71,46 @@ class Background():
 # Player
 class Player():
 
-    def __init__(self, screen, player_x, player_y):
+    def __init__(self, screen, gravity, player_x, player_y, ground_level,
+                    jump_height):
         self.screen = screen
+        self.gravity = gravity
+        self.ground_level = ground_level
+        self.jump_height = jump_height
+        self.stand = load_image(
+            os.path.join(
+                os.path.dirname(__file__),
+                "graphics",
+                "player",
+                "player_stand.png"))
+        self.rect = self.stand.get_rect(
+            midbottom = (player_x, player_y))  # Place rectangle from midbottom
 
-        try:
-            self.player_surf = load_image(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "graphics",
-                    "player",
-                    "player_stand.png"))
-            self.player_rect = self.player_surf.get_rect(
-                midbottom = (player_x, player_y))
-        except FileNotFoundError:
-            print("Player file not found")
+    def player_input(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE] and self.rect.bottom >= self.ground_level:
+            self.gravity = self.jump_height
+
+    def apply_gravity(self, gravity):
+        self.gravity += gravity
+        self.rect.y += self.gravity
+        if self.rect.bottom >= self.ground_level:
+            self.rect.bottom = self.ground_level
 
     def draw(self):
-        self.screen.scr.blit(self.player_surf, self.player_rect)
+        self.screen.scr.blit(self.stand, self.rect)
+
+    def update(self):
+        self.player_input()
+        self.apply_gravity(ONE)
 
 # Initialize Pygame
 pygame.init()
 
 # Create Objects
-screen = Screen(SCREEN_WIDTH, SCREEN_HEIGHT, "todo")
+screen = Screen(SCREEN_WIDTH, SCREEN_HEIGHT, CAPTION)
 background = Background(screen, GROUND_X, GROUND_Y, SKY_X, SKY_Y)
-player = Player(screen, PLAYER_X, PLAYER_Y)
+player = Player(screen, ZERO, PLAYER_X, PLAYER_Y, GROUND_LEVEL, JUMP_HEIGHT)
 
 # Game Loop
 while running:
@@ -107,6 +124,7 @@ while running:
 
     # Update
     pygame.display.update()
+    player.update()
 
     # Clock
     screen.clock.tick(screen.framerate)
