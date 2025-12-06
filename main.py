@@ -14,6 +14,7 @@ PLAYER_X = 100
 PLAYER_Y = GROUND_LEVEL
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
+SCREEN_LIMIT = 35
 SKY_X = 0
 SKY_Y = 0
 ZERO = 0
@@ -71,14 +72,16 @@ class Background():
 # Player
 class Player():
 
-    def __init__(self, screen, gravity, player_x, player_y, ground_level,
-                    jump_height):
+    def __init__(self, screen, gravity, walk_index, player_x, player_y,
+                ground_level, jump_height):
+        self.moving_horizontally = False
         self.screen = screen
         self.gravity = gravity
         self.player_x = player_x
         self.player_y = player_y
         self.ground_level = ground_level
         self.jump_height = jump_height
+        self.walk_index = walk_index
         self.jump_image = load_image(
             os.path.join(
                 os.path.dirname(__file__),
@@ -91,6 +94,19 @@ class Player():
                 "graphics",
                 "player",
                 "player_stand.png"))
+        walk_image_1 = load_image(
+            os.path.join(
+                os.path.dirname(__file__),
+                "graphics",
+                "player",
+                "player_walk_1.png"))
+        walk_image_2 = load_image(
+            os.path.join(
+                os.path.dirname(__file__),
+                "graphics",
+                "player",
+                "player_walk_2.png"))
+        self.walking = [walk_image_1, walk_image_2]
         self.image = self.stand_image
         # Place rectangle from midbottom
         self.rect = self.image.get_rect(
@@ -104,12 +120,33 @@ class Player():
 
     def player_input(self):
         keys = pygame.key.get_pressed()
+        # Move
+        if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
+            if self.rect.bottom == self.ground_level:
+                if keys[pygame.K_LEFT]:
+                    self.player_x += -5
+                elif keys[pygame.K_RIGHT]:
+                    self.player_x += 5
+                self.rect = self.image.get_rect(
+                    midbottom = (self.player_x, self.player_y))
+            if self.player_x > SCREEN_WIDTH - SCREEN_LIMIT:
+                self.player_x = SCREEN_WIDTH - 35
+                self.rect = self.image.get_rect(
+                    midbottom = (self.player_x, self.player_y))
+            elif self.player_x < SCREEN_LIMIT:
+                self.player_x = SCREEN_LIMIT
+                self.rect = self.image.get_rect(
+                    midbottom = (self.player_x, self.player_y))
+            self.moving_horizontally = True
+        else:
+            self.moving_horizontally = False
+        # Jump
         if keys[pygame.K_SPACE] and self.rect.bottom >= self.ground_level:
             self.gravity = self.jump_height
             self.play_sound(self.jump_sound)
 
-    def apply_gravity(self, gravity):
-        self.gravity += gravity
+    def apply_gravity(self):
+        self.gravity += ONE
         self.rect.y += self.gravity
         if self.rect.bottom >= self.ground_level:
             self.rect.bottom = self.ground_level
@@ -120,15 +157,21 @@ class Player():
     def animate(self):
         if self.rect.bottom < self.ground_level:
             self.image = self.jump_image
-        else:
-            self.image = self.stand_image
+        elif self.rect.bottom == self.ground_level:
+            if self.moving_horizontally:
+                self.walk_index += 0.1
+                if self.walk_index >= len(self.walking):
+                    self.walk_index = ZERO
+                self.image = self.walking[int(self.walk_index)]
+            else:
+                self.image = self.stand_image
 
     def play_sound(self, sound):
         sound.play()
 
     def update(self):
         self.player_input()
-        self.apply_gravity(ONE)
+        self.apply_gravity()
         self.animate()
 
 # Initialize Pygame
@@ -137,7 +180,8 @@ pygame.init()
 # Create Objects
 screen = Screen(SCREEN_WIDTH, SCREEN_HEIGHT, CAPTION)
 background = Background(screen, GROUND_X, GROUND_Y, SKY_X, SKY_Y)
-player = Player(screen, ZERO, PLAYER_X, PLAYER_Y, GROUND_LEVEL, JUMP_HEIGHT)
+player = Player(screen, ZERO, ZERO, PLAYER_X, PLAYER_Y, GROUND_LEVEL,
+        JUMP_HEIGHT)
 
 # Game Loop
 while running:
