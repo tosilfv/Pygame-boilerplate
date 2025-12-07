@@ -14,7 +14,8 @@ PLAYER_X = 100
 PLAYER_Y = GROUND_LEVEL
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 400
-SCREEN_LIMIT = 35
+SCREEN_LIMIT_L = 35
+SCREEN_LIMIT_R = 40
 SKY_X = 0
 SKY_Y = 0
 ZERO = 0
@@ -129,12 +130,12 @@ class Player():
                     self.player_x += 5
                 self.rect = self.image.get_rect(
                     midbottom = (self.player_x, self.player_y))
-            if self.player_x > SCREEN_WIDTH - SCREEN_LIMIT:
-                self.player_x = SCREEN_WIDTH - 35
+            if self.player_x > SCREEN_WIDTH - SCREEN_LIMIT_R:
+                self.player_x = SCREEN_WIDTH - SCREEN_LIMIT_R
                 self.rect = self.image.get_rect(
                     midbottom = (self.player_x, self.player_y))
-            elif self.player_x < SCREEN_LIMIT:
-                self.player_x = SCREEN_LIMIT
+            elif self.player_x < SCREEN_LIMIT_L:
+                self.player_x = SCREEN_LIMIT_L
                 self.rect = self.image.get_rect(
                     midbottom = (self.player_x, self.player_y))
             self.moving_horizontally = True
