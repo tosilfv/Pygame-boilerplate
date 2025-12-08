@@ -4,20 +4,23 @@ from sys import exit
 
 # Constants
 CAPTION = "Pygame"
-GROUND_LEVEL = 300
+FIVE = 5
 FPS = 60  # Frames per second
+GRAVITY_MAX = -150
+GROUND_LEVEL = 300
 GROUND_X = 0
 GROUND_Y = GROUND_LEVEL
-JUMP_HEIGHT = -20
 ONE = 1
 PLAYER_X = 100
 PLAYER_Y = GROUND_LEVEL
-SCREEN_WIDTH = 800
+POINT_ONE = 0.1
 SCREEN_HEIGHT = 400
+SCREEN_WIDTH = 800
 SCREEN_LIMIT_L = 35
 SCREEN_LIMIT_R = 40
 SKY_X = 0
 SKY_Y = 0
+TEN = 10
 ZERO = 0
 
 # Variables
@@ -73,15 +76,14 @@ class Background():
 # Player
 class Player():
 
-    def __init__(self, screen, gravity, walk_index, player_x, player_y,
-                ground_level, jump_height):
+    def __init__(self, screen, walk_index, player_x, player_y):
         self.moving_horizontally = False
+        self.moving_up = False
+        self.moving_down = False
         self.screen = screen
-        self.gravity = gravity
+        self.gravity = ZERO
         self.player_x = player_x
         self.player_y = player_y
-        self.ground_level = ground_level
-        self.jump_height = jump_height
         self.walk_index = walk_index
         self.jump_image = load_image(
             os.path.join(
@@ -109,6 +111,7 @@ class Player():
                 "player_walk_2.png"))
         self.walking = [walk_image_1, walk_image_2]
         self.image = self.stand_image
+
         # Place rectangle from midbottom
         self.rect = self.image.get_rect(
                     midbottom = (self.player_x, self.player_y))
@@ -117,50 +120,87 @@ class Player():
                 os.path.dirname(__file__),
                 "audio",
                 "jump.mp3"))
-        self.jump_sound.set_volume(0.1)
+        self.jump_sound.set_volume(POINT_ONE)
+
+    @property
+    def rect_x(self):
+        return self.rect.x
+
+    @property
+    def rect_y(self):
+        return self.rect.y
+
+    @rect_y.setter
+    def rect_y(self, val):
+        self.rect.y = val
 
     def player_input(self):
         keys = pygame.key.get_pressed()
+
         # Move
-        if keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]:
-            if self.rect.bottom == self.ground_level:
-                if keys[pygame.K_LEFT]:
-                    self.player_x += -5
-                elif keys[pygame.K_RIGHT]:
-                    self.player_x += 5
-                self.rect = self.image.get_rect(
-                    midbottom = (self.player_x, self.player_y))
-            if self.player_x > SCREEN_WIDTH - SCREEN_LIMIT_R:
-                self.player_x = SCREEN_WIDTH - SCREEN_LIMIT_R
-                self.rect = self.image.get_rect(
-                    midbottom = (self.player_x, self.player_y))
-            elif self.player_x < SCREEN_LIMIT_L:
-                self.player_x = SCREEN_LIMIT_L
-                self.rect = self.image.get_rect(
-                    midbottom = (self.player_x, self.player_y))
+        if keys[pygame.K_LEFT]:
+            self.player_x += -FIVE
+            self.moving_horizontally = True
+        elif keys[pygame.K_RIGHT]:
+            self.player_x += FIVE
             self.moving_horizontally = True
         else:
             self.moving_horizontally = False
+        if self.player_x > SCREEN_WIDTH - SCREEN_LIMIT_R:
+            self.player_x = SCREEN_WIDTH - SCREEN_LIMIT_R
+        elif self.player_x < SCREEN_LIMIT_L:
+            self.player_x = SCREEN_LIMIT_L
+
         # Jump
-        if keys[pygame.K_SPACE] and self.rect.bottom >= self.ground_level:
-            self.gravity = self.jump_height
+        if keys[pygame.K_SPACE] and self.rect.bottom >= GROUND_LEVEL:
+            self.moving_up = True
             self.play_sound(self.jump_sound)
 
+        self.rect = self.image.get_rect(
+                    midbottom = (self.player_x, self.player_y))
+
     def apply_gravity(self):
-        self.gravity += ONE
-        self.rect.y += self.gravity
-        if self.rect.bottom >= self.ground_level:
-            self.rect.bottom = self.ground_level
+        # BEGINNING:
+            # Gravity = 0
+        if self.moving_up:
+            print('1')
+            # JUMP:
+                # Gravity Cumulative -10
+                # Fly Until At Vertical Top Max
+            self.gravity += -TEN
+            self.rect.bottom += self.gravity
+        if self.gravity <= GRAVITY_MAX:
+            print('2')
+            # At Vertical Top Max
+                # Gravity <= -100
+                # Start Descending
+            self.rect.bottom += -self.gravity
+            self.moving_up = False
+            self.moving_down = True
+        if self.moving_down:
+            print('3')
+            # Descending:
+                # Gravity Cumulative +10
+                # Fly Until At Ground Level
+            self.gravity += TEN
+            self.rect.bottom += self.gravity
+        if self.moving_down and self.rect.bottom >= GROUND_LEVEL:
+            print('4')
+            # At Ground Level:
+                # Gravity = 0
+            self.rect.bottom = GROUND_LEVEL
+            self.moving_down = False
+            self.gravity = ZERO
 
     def draw(self):
         self.screen.scr.blit(self.image, self.rect)
 
     def animate(self):
-        if self.rect.bottom < self.ground_level:
+        if self.rect.bottom < GROUND_LEVEL:
             self.image = self.jump_image
-        elif self.rect.bottom == self.ground_level:
+        elif self.rect.bottom == GROUND_LEVEL:
             if self.moving_horizontally:
-                self.walk_index += 0.1
+                self.walk_index += POINT_ONE
                 if self.walk_index >= len(self.walking):
                     self.walk_index = ZERO
                 self.image = self.walking[int(self.walk_index)]
@@ -181,8 +221,7 @@ pygame.init()
 # Create Objects
 screen = Screen(SCREEN_WIDTH, SCREEN_HEIGHT, CAPTION)
 background = Background(screen, GROUND_X, GROUND_Y, SKY_X, SKY_Y)
-player = Player(screen, ZERO, ZERO, PLAYER_X, PLAYER_Y, GROUND_LEVEL,
-        JUMP_HEIGHT)
+player = Player(screen, ZERO, PLAYER_X, PLAYER_Y)
 
 # Game Loop
 while running:
@@ -197,6 +236,9 @@ while running:
     # Update
     pygame.display.update()
     player.update()
+
+    # Print
+    print(f'x: {player.rect_x}, y: {player.rect_y}')
 
     # Clock
     screen.clock.tick(screen.framerate)
