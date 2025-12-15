@@ -11,7 +11,8 @@ pygame.init()
 # Player
 class Player():
 
-    def __init__(self, screen):
+    def __init__(self, mediator, screen):
+        self.mediator = mediator
         self.moving_horizontally = False
         self.moving_up = False
         self.moving_down = False
@@ -71,6 +72,7 @@ class Player():
                 "audio",
                 "hyppy.mp3"))
         self.jump_sound.set_volume(POINT_ONE)
+        self.notify('Player was created.')
 
     @property
     def rect_x(self):
@@ -105,6 +107,7 @@ class Player():
         if keys[pygame.K_SPACE] and self.rect.bottom >= GROUND_LEVEL + FIVE:
             self.moving_up = True
             self.play_sound(self.jump_sound)
+            self.notify('Player jumped')
 
         self.rect = self.image.get_rect(
                     midbottom = (self.player_x, self.player_y))
@@ -113,14 +116,12 @@ class Player():
         # BEGINNING:
             # Gravity = 0
         if self.moving_up:
-            print('1')
             # JUMP:
                 # Gravity Cumulative -10
                 # Fly Until At Vertical Top Max
             self.gravity += -TEN
             self.rect.bottom += self.gravity
         if self.gravity <= GRAVITY_MAX:
-            print('2')
             # At Vertical Top Max
                 # Gravity <= -100
                 # Start Descending
@@ -128,14 +129,12 @@ class Player():
             self.moving_up = False
             self.moving_down = True
         if self.moving_down:
-            print('3')
             # Descending:
                 # Gravity Cumulative +10
                 # Fly Until At Ground Level
             self.gravity += TEN
             self.rect.bottom += self.gravity
         if self.moving_down and self.rect.bottom >= GROUND_LEVEL + FIVE:
-            print('4')
             # At Ground Level:
                 # Gravity = 0
             self.rect.bottom = GROUND_LEVEL + FIVE
@@ -164,3 +163,6 @@ class Player():
         self.player_input()
         self.apply_gravity()
         self.animate()
+
+    def notify(self, message):
+        self.mediator.notify(message)

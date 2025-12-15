@@ -5,12 +5,14 @@ from utils.helpers import helpers
 # Background
 class Background():
 
-    def __init__(self, screen):
+    def __init__(self, mediator, screen):
+        self.mediator = mediator
         self.screen = screen
         self.ground_x = GROUND_X
         self.ground_y = GROUND_Y
         self.sky_x = SKY_X
         self.sky_y = SKY_Y
+        self.notify('Background was created.')
 
         self.ground_surf = helpers.load_image(
             os.path.join(
@@ -28,3 +30,6 @@ class Background():
     def draw(self):
         self.screen.scr.blit(self.ground_surf, (self.ground_x, self.ground_y))
         self.screen.scr.blit(self.sky_surf, (self.sky_x, self.sky_y))
+
+    def notify(self, message):
+        self.mediator.notify(message)
