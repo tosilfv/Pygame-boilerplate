@@ -21,6 +21,9 @@ class Player():
         self.player_x = PLAYER_X
         self.player_y = PLAYER_Y
         self.walk_index = ZERO
+        self.facing_left = False  # Track direction
+        
+        # Normal (right-facing) images
         self.jump_image = helpers.load_image(
             os.path.join(
                 os.path.dirname(os.path.dirname(__file__)),
@@ -50,6 +53,37 @@ class Player():
                 "player",
                 "piccolo_walk2_normal.png"))
         self.walking = [walk_image_1, walk_image_2]
+        
+        # Left-facing images
+        self.jump_image_left = helpers.load_image(
+            os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "media",
+                "graphics",
+                "player",
+                "piccolo_left_jump_normal.png"))
+        self.stand_image_left = helpers.load_image(
+            os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "media",
+                "graphics",
+                "player",
+                "piccolo_left_stand_normal.png"))
+        walk_image_1_left = helpers.load_image(
+            os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "media",
+                "graphics",
+                "player",
+                "piccolo_left_walk1_normal.png"))
+        walk_image_2_left = helpers.load_image(
+            os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "media",
+                "graphics",
+                "player",
+                "piccolo_left_walk2_normal.png"))
+        self.walking_left = [walk_image_1_left, walk_image_2_left]
         self.image = self.stand_image
 
         # Place rectangle from midbottom
@@ -93,9 +127,11 @@ class Player():
         if keys[pygame.K_LEFT]:
             self.player_x += -FIVE
             self.moving_horizontally = True
+            self.facing_left = True
         elif keys[pygame.K_RIGHT]:
             self.player_x += FIVE
             self.moving_horizontally = True
+            self.facing_left = False
         else:
             self.moving_horizontally = False
         if self.player_x > SCREEN_WIDTH - SCREEN_LIMIT_R:
@@ -107,7 +143,7 @@ class Player():
         if keys[pygame.K_SPACE] and self.rect.bottom >= GROUND_LEVEL + FIVE:
             self.moving_up = True
             self.play_sound(self.jump_sound)
-            self.notify('Player jumped')
+            self.notify('Player jumped.')
 
         self.rect = self.image.get_rect(
                     midbottom = (self.player_x, self.player_y))
@@ -146,15 +182,19 @@ class Player():
 
     def animate(self):
         if self.rect.bottom < GROUND_LEVEL + FIVE:
-            self.image = self.jump_image
+            self.image = self.jump_image_left if self.facing_left\
+                else self.jump_image
         elif self.rect.bottom == GROUND_LEVEL + FIVE:
             if self.moving_horizontally:
                 self.walk_index += POINT_ONE
                 if self.walk_index >= len(self.walking):
                     self.walk_index = ZERO
-                self.image = self.walking[int(self.walk_index)]
+                walking_images = self.walking_left if self.facing_left\
+                    else self.walking
+                self.image = walking_images[int(self.walk_index)]
             else:
-                self.image = self.stand_image
+                self.image = self.stand_image_left if self.facing_left\
+                    else self.stand_image
 
     def play_sound(self, sound):
         sound.play()
