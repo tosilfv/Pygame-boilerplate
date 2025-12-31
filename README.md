@@ -34,7 +34,8 @@ TODO
 
 ## Testing
 
-TODO
+Install pytest: pip install -r requirements-dev.txt
+Run all tests with verbose output: pytest -v
 
 ## Changelog
 
@@ -42,7 +43,12 @@ TODO
 _- Initial Upload with original music and artwork._<br />
 
 **[0.0.2] - Dec 13. 2025:**<br />
-_- Refactor classes._<br />
+_- Refactored classes._<br />
 
 **[0.0.3] - Dec 14. 2025:**<br />
-_- Implement the Mediator pattern._<br />
+_- Implemented the Mediator pattern._<br />
+
+**[0.0.4] - Dec 30. 2025:**<br />
+_- Implemented the background change._<br />
+_- Added unit tests._<br />
+_- Added documentation._<br />

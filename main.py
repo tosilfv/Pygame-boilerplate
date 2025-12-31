@@ -1,3 +1,11 @@
+"""
+Main entry point for the Piccolo game.
+
+This module initializes and runs the game loop, handling pygame events
+and delegating game logic to the Game class. The game continues running
+until the user closes the window.
+"""
+
 import pygame
 from sys import exit
 from control.game import game
@@ -6,14 +14,15 @@ from control.game import game
 running = True
 
 # Game Loop
-while running:
-    for evt in pygame.event.get():
-        if evt.type == pygame.QUIT:
-            running = False
+if __name__ == "__main__":
+    while running:
+        for evt in pygame.event.get():
+            if evt.type == pygame.QUIT:
+                running = False
 
-    # Run
-    game.run()
+        # Run
+        game.run()
 
-# Exit
-pygame.quit()
-exit()
+    # Exit
+    pygame.quit()
+    exit()
