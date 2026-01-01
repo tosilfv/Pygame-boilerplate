@@ -14,7 +14,7 @@ You control the piccolo that works in a hotel.<br />
 Program is developed with [Cursor](https://cursor.com/) in Python.<br />
 Install Cursor, python 3 and required libraries.<br />
 Run main.py in the root folder to start the program.<br />
-The game is created using the<br />
+The game is created using the 
 [Mediator Pattern](https://en.wikipedia.org/wiki/Mediator_pattern),<br />
 where the Mediator is notified of any actions in the game by the game<br />
 objects. Mediator then notifies the relevant game objects in return to<br />
@@ -34,8 +34,8 @@ TODO
 
 ## Testing
 
-Install pytest: pip install -r requirements-dev.txt
-Run all tests with verbose output: pytest -v
+Install pytest: pip install -r requirements-dev.txt<br />
+Run all tests with verbose output: pytest -v<br />
 
 ## Changelog
 
@@ -52,3 +52,6 @@ _- Implemented the Mediator pattern._<br />
 _- Implemented the background change._<br />
 _- Added unit tests._<br />
 _- Added documentation._<br />
+
+**[0.0.5] - Dec 30. 2025:**<br />
+_- Added graphics._<br />
