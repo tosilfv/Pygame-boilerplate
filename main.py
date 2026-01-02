@@ -19,6 +19,9 @@ if __name__ == "__main__":
         for evt in pygame.event.get():
             if evt.type == pygame.QUIT:
                 running = False
+            # Handle elevator number input
+            elif evt.type == pygame.KEYDOWN:
+                game.player.handle_elevator_input(evt)
 
         # Run
         game.run()

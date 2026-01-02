@@ -53,5 +53,15 @@ _- Implemented the background change._<br />
 _- Added unit tests._<br />
 _- Added documentation._<br />
 
-**[0.0.5] - Dec 30. 2025:**<br />
+**[0.0.5] - Dec 31. 2025:**<br />
 _- Added graphics._<br />
+
+**[0.0.6] - Jan 1. 2026:**<br />
+_- Modified graphics._<br />
+_- Added audio._<br />
+_- Added front desk screen._<br />
+_- Added elevator screens._<br />
+_- Added floor screens._<br />
+_- Added elevator user input prompt for selecting floor._<br />
+_- Added corridor screens._<br />
+_- Utilized large images._<br />

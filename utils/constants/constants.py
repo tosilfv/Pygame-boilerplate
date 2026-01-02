@@ -8,6 +8,7 @@ these values makes the game easier to configure and maintain.
 
 # Movement Constants (defined first as they're used by other constants)
 FIVE = 5
+HUNDRED = 100
 POINT_ONE = 0.1
 TEN = 10
 ZERO = 0
