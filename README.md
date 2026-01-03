@@ -65,3 +65,6 @@ _- Added floor screens._<br />
 _- Added elevator user input prompt for selecting floor._<br />
 _- Added corridor screens._<br />
 _- Utilized large images._<br />
+
+**[0.0.7] - Jan 2. 2026:**<br />
+_- Added corridor 2 scene._<br />

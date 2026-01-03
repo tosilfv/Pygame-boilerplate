@@ -18,10 +18,12 @@ class Mediator():
     
     Attributes:
         message (str): Current notification message.
+        current_background (str): Current background.
     """
 
     def __init__(self) -> None:
         self.message = "Mediator was created."
+        self.current_background = ""
         self.print_message()
 
     def notify(self, message):
@@ -44,3 +46,24 @@ class Mediator():
         Outputs the stored message to stdout for debugging and logging.
         """
         print(self.message)
+
+    @property
+    def current_bg(self):
+        """
+        Get the current background.
+        
+        Returns:
+            str: name of the current background.
+        """
+        return self.current_background
+
+
+    @current_bg.setter
+    def current_bg(self, val):
+        """
+        Set the current background.
+        
+        Args:
+            val (str): New current background value.
+        """
+        self.current_background = val

@@ -24,9 +24,9 @@ GRAVITY_MAX = -150
 GROUND_LEVEL = 320
 
 # Positioning Constants
-GROUND_X = 0
+GROUND_X = ZERO
 GROUND_Y = GROUND_LEVEL
-SKY_X = 0
+SKY_X = ZERO
 SKY_Y = -120
 
 # Player Configuration
@@ -36,3 +36,6 @@ PLAYER_Y = GROUND_LEVEL + FIVE
 # Screen Boundaries
 SCREEN_LIMIT_L = 35
 SCREEN_LIMIT_R = 40
+
+# Colors
+PURPLE = (177, 156, 217)
