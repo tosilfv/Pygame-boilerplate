@@ -453,6 +453,15 @@ class Background():
         self.screen.scr.blit(self.ground_surf, (self.ground_x, self.ground_y))
         self.screen.scr.blit(self.sky_surf, (self.sky_x, self.sky_y))
 
+    def change_background(self, background):
+        """
+        Change background throught the mediator.
+        
+        Args:
+            background (str): Background to send to the mediator.
+        """
+        self.mediator.current_bg(background)
+
     def notify(self, message):
         """
         Send a notification message through the mediator.
