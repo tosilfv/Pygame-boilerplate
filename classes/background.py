@@ -28,7 +28,7 @@ class Background():
         ground_y (int): Y coordinate for ground surface.
         sky_x (int): X coordinate for sky surface.
         sky_y (int): Y coordinate for sky surface.
-        mediator.current_bg (str): Current background scene name.
+        current_background (str): Current background scene name.
         entrance_ground_surf: Surface for entrance ground.
         entrance_sky_surf: Surface for entrance sky.
         yard_ground_surf: Surface for yard ground.
@@ -44,7 +44,7 @@ class Background():
         self.ground_y = GROUND_Y
         self.sky_x = SKY_X
         self.sky_y = SKY_Y
-        self.mediator.current_bg = "entrance"  # Track current background
+        self.current_background = "entrance"  # Track current background
         self.notify('Background was created.')
 
         # Initial background (entrance)
@@ -221,11 +221,11 @@ class Background():
         at entrance. Updates ground and sky surfaces accordingly and notifies
         the mediator of the change.
         """
-        if self.mediator.current_bg == "entrance":
-            self.mediator.current_bg = "yard"
+        if self.current_background == "entrance":
+            self.current_background = "yard"
             self.ground_surf = self.yard_ground_surf
             self.sky_surf = self.yard_sky_surf
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
 
     def switch_to_entrance(self):
         """
@@ -235,12 +235,12 @@ class Background():
         currently at yard or frontdesk. Updates ground and sky surfaces
         accordingly and notifies the mediator of the change.
         """
-        if self.mediator.current_bg == "yard" or \
-                self.mediator.current_bg == "frontdesk":
-            self.mediator.current_bg = "entrance"
+        if self.current_background == "yard" or \
+                self.current_background == "frontdesk":
+            self.current_background = "entrance"
             self.ground_surf = self.entrance_ground_surf
             self.sky_surf = self.entrance_sky_surf
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
 
     def switch_to_frontdesk(self):
         """
@@ -250,12 +250,12 @@ class Background():
         frontdesk if currently at entrance or elevator_lobby. Updates ground
         and sky surfaces accordingly and notifies the mediator of the change.
         """
-        if self.mediator.current_bg == "entrance" or \
-                self.mediator.current_bg == "elevator_lobby":
-            self.mediator.current_bg = "frontdesk"
+        if self.current_background == "entrance" or \
+                self.current_background == "elevator_lobby":
+            self.current_background = "frontdesk"
             self.ground_surf = self.frontdesk_ground_surf
             self.sky_surf = self.frontdesk_sky_surf
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
 
     def switch_to_elevator_lobby(self):
         """
@@ -266,14 +266,14 @@ class Background():
         elevator_open background. Updates ground and sky surfaces accordingly
         and notifies the mediator of the change.
         """
-        is_elevator_open = (self.mediator.current_bg == "elevator_open_lobby" or
-                    self.mediator.current_bg.startswith("elevator_open_floor"))
+        is_elevator_open = (self.current_background == "elevator_open_lobby" or
+                    self.current_background.startswith("elevator_open_floor"))
         
-        if self.mediator.current_bg == "frontdesk" or is_elevator_open:
-            self.mediator.current_bg = "elevator_lobby"
+        if self.current_background == "frontdesk" or is_elevator_open:
+            self.current_background = "elevator_lobby"
             self.ground_surf = self.elevator_lobby_ground_surf
             self.sky_surf = self.elevator_lobby_sky_surf
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
 
     def switch_to_elevator_open_lobby(self):
         """
@@ -283,11 +283,11 @@ class Background():
         elevator_open_lobby if currently at elevator_lobby. Updates ground and
         sky surfaces accordingly and notifies the mediator of the change.
         """
-        if self.mediator.current_bg == "elevator_lobby":
-            self.mediator.current_bg = "elevator_open_lobby"
+        if self.current_background == "elevator_lobby":
+            self.current_background = "elevator_open_lobby"
             self.ground_surf = self.elevator_open_lobby_ground_surf
             self.sky_surf = self.elevator_open_lobby_sky_surf
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
 
     def switch_to_elevator_floor(self, floor_num):
         """
@@ -302,21 +302,21 @@ class Background():
             floor_num (int): Floor number (1-9).
         """
         # Check if current background is any elevator_open background or a corridor on the same floor
-        is_elevator_open = (self.mediator.current_bg == "elevator_open_lobby" or
-                    self.mediator.current_bg.startswith("elevator_open_floor"))
+        is_elevator_open = (self.current_background == "elevator_open_lobby" or
+                    self.current_background.startswith("elevator_open_floor"))
         is_corridor_on_same_floor = \
-                        (self.mediator.current_bg.startswith("corridor") and
+                        (self.current_background.startswith("corridor") and
                             self.current_floor == floor_num)
         
         if ((is_elevator_open or is_corridor_on_same_floor) and 
             floor_num in self.elevator_floor_ground_surfs and 
             floor_num in self.elevator_floor_sky_surfs):
-            self.mediator.current_bg = f"elevator_floor{floor_num}"
+            self.current_background = f"elevator_floor{floor_num}"
             self.ground_surf = self.elevator_floor_ground_surfs[floor_num]
             self.sky_surf = self.elevator_floor_sky_surfs[floor_num]
             self.current_floor = floor_num
             self.current_corridor = None  # At elevator, not in corridor
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
     
     def switch_to_elevator_open_floor(self, floor_num):
         """
@@ -330,15 +330,15 @@ class Background():
         Args:
             floor_num (int): Floor number (1-9).
         """
-        if (self.mediator.current_bg == f"elevator_floor{floor_num}" and 
+        if (self.current_background == f"elevator_floor{floor_num}" and 
             floor_num in self.elevator_open_floor_ground_surfs and 
             floor_num in self.elevator_open_floor_sky_surfs):
-            self.mediator.current_bg = f"elevator_open_floor{floor_num}"
+            self.current_background = f"elevator_open_floor{floor_num}"
             self.ground_surf = self.elevator_open_floor_ground_surfs[floor_num]
             self.sky_surf = self.elevator_open_floor_sky_surfs[floor_num]
             self.current_floor = floor_num
             self.current_corridor = None  # At elevator, not in corridor
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
     
     def switch_to_corridor(self, floor_num, corridor_num):
         """
@@ -354,14 +354,14 @@ class Background():
         """
         if (floor_num, corridor_num) in self.corridor_ground_surfs and \
            (floor_num, corridor_num) in self.corridor_sky_surfs:
-            self.mediator.current_bg = \
+            self.current_background = \
                 f"corridor{corridor_num}_floor{floor_num}"
             self.ground_surf = \
                 self.corridor_ground_surfs[(floor_num, corridor_num)]
             self.sky_surf = self.corridor_sky_surfs[(floor_num, corridor_num)]
             self.current_floor = floor_num
             self.current_corridor = corridor_num
-            self.notify(f'Background switched to {self.mediator.current_bg}.')
+            self.notify(f'Background switched to {self.current_background}.')
     
     def get_available_corridors(self, floor_num):
         """
@@ -452,15 +452,6 @@ class Background():
         """
         self.screen.scr.blit(self.ground_surf, (self.ground_x, self.ground_y))
         self.screen.scr.blit(self.sky_surf, (self.sky_x, self.sky_y))
-
-    def change_background(self, background):
-        """
-        Change background throught the mediator.
-        
-        Args:
-            background (str): Background to send to the mediator.
-        """
-        self.mediator.current_bg(background)
 
     def notify(self, message):
         """

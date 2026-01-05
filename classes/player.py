@@ -282,7 +282,7 @@ class Player():
         """
         # Reset elevator prompt if no longer in any elevator_open background
         if (self.background and 
-            not self.mediator.current_background.startswith("elevator_open")
+            not self.background.current_background.startswith("elevator_open")
             and self.show_elevator_prompt):
             self.show_elevator_prompt = False
             self.selected_floor = None
@@ -309,7 +309,7 @@ class Player():
         
         if (keys[pygame.K_UP] and 
             self.background and 
-            self.mediator.current_background == "entrance" and
+            self.background.current_background == "entrance" and
             center_min <= self.player_x <= center_max):
             self.background.switch_to_frontdesk()
             self.change_music("musa2.wav")
@@ -317,13 +317,13 @@ class Player():
         # Check if player is at center and up arrow is pressed in elevator lobby
         if (keys[pygame.K_UP] and 
             self.background and 
-            self.mediator.current_background == "elevator_lobby" and
+            self.background.current_background == "elevator_lobby" and
             center_min <= self.player_x <= center_max):
             # Store the previous background state
-            previous_background = self.mediator.current_background
+            previous_background = self.background.current_background
             self.background.switch_to_elevator_open_lobby()
             # Play sound only if the switch actually happened (background changed)
-            if previous_background == "elevator_lobby" and self.mediator.current_background == "elevator_open_lobby":
+            if previous_background == "elevator_lobby" and self.background.current_background == "elevator_open_lobby":
                 self.play_sound(self.hissi_sound)
                 self.show_elevator_prompt = True
                 self.selected_floor = None
@@ -331,16 +331,16 @@ class Player():
         # Check if player is at center and up arrow is pressed on any elevator floor
         if (keys[pygame.K_UP] and 
             self.background and 
-            self.mediator.current_background.startswith("elevator_floor") and
+            self.background.current_background.startswith("elevator_floor") and
             center_min <= self.player_x <= center_max):
             # Extract floor number from background name (e.g., "elevator_floor3" -> 3)
             try:
-                floor_num = int(self.mediator.current_background.replace("elevator_floor", ""))
+                floor_num = int(self.background.current_background.replace("elevator_floor", ""))
                 # Store the previous background state
-                previous_background = self.mediator.current_background
+                previous_background = self.background.current_background
                 self.background.switch_to_elevator_open_floor(floor_num)
                 # Play sound only if the switch actually happened (background changed)
-                if previous_background == f"elevator_floor{floor_num}" and self.mediator.current_background == f"elevator_open_floor{floor_num}":
+                if previous_background == f"elevator_floor{floor_num}" and self.background.current_background == f"elevator_open_floor{floor_num}":
                     self.play_sound(self.hissi_sound)
                     self.show_elevator_prompt = True
                     self.selected_floor = None
@@ -350,7 +350,7 @@ class Player():
         # Check if player is at center and down arrow is pressed
         if (keys[pygame.K_DOWN] and 
             self.background and 
-            self.mediator.current_background == "frontdesk" and
+            self.background.current_background == "frontdesk" and
             center_min <= self.player_x <= center_max):
             self.background.switch_to_entrance()
             self.change_music("musa1.wav")
@@ -362,27 +362,27 @@ class Player():
             # threshold)
             if self.background and self.prev_player_x <= SCREEN_WIDTH\
                                                             - SCREEN_LIMIT_R:
-                if self.mediator.current_background == "entrance":
+                if self.background.current_background == "entrance":
                     self.background.switch_to_yard()
                     # Position player 10px from left edge after switching
                     self.player_x = TEN
-                elif self.mediator.current_background == "yard":
+                elif self.background.current_background == "yard":
                     self.background.switch_to_entrance()
                     # Position player 10px from left edge after switching
                     self.player_x = TEN
-                elif self.mediator.current_background == "frontdesk":
+                elif self.background.current_background == "frontdesk":
                     self.background.switch_to_elevator_lobby()
                     # Position player 10px from left edge after switching
                     self.player_x = TEN
-                elif self.mediator.current_background == "elevator_lobby":
+                elif self.background.current_background == "elevator_lobby":
                     self.background.switch_to_frontdesk()
                     # Position player 10px from left edge after switching
                     self.player_x = TEN
                 # Handle corridor transitions when on elevator floors
-                elif self.mediator.current_background.startswith("elevator_floor"):
+                elif self.background.current_background.startswith("elevator_floor"):
                     # Extract floor number from background name
                     try:
-                        floor_num = int(self.mediator.current_background.replace("elevator_floor", ""))
+                        floor_num = int(self.background.current_background.replace("elevator_floor", ""))
                         next_corridor = self.background.get_next_corridor_right(floor_num, self.background.current_corridor)
                         if next_corridor is not None:
                             # Switch to next corridor
@@ -393,10 +393,10 @@ class Player():
                             pass
                     except ValueError:
                         pass  # Invalid floor number format
-                elif self.mediator.current_background.startswith("corridor"):
+                elif self.background.current_background.startswith("corridor"):
                     # Extract floor and corridor numbers from background name (e.g., "corridor1_floor3")
                     try:
-                        parts = self.mediator.current_background.split("_")
+                        parts = self.background.current_background.split("_")
                         corridor_num = int(parts[0].replace("corridor", ""))
                         floor_num = int(parts[1].replace("floor", ""))
                         next_corridor = self.background.get_next_corridor_right(floor_num, corridor_num)
@@ -417,27 +417,27 @@ class Player():
             # Switch background when reaching left edge (only if just crossed
             # threshold)
             if self.background and self.prev_player_x >= SCREEN_LIMIT_L:
-                if self.mediator.current_background == "entrance":
+                if self.background.current_background == "entrance":
                     self.background.switch_to_yard()
                     # Position player 10px from right edge after switching
                     self.player_x = SCREEN_WIDTH - TEN
-                elif self.mediator.current_background == "yard":
+                elif self.background.current_background == "yard":
                     self.background.switch_to_entrance()
                     # Position player 10px from right edge after switching
                     self.player_x = SCREEN_WIDTH - TEN
-                elif self.mediator.current_background == "frontdesk":
+                elif self.background.current_background == "frontdesk":
                     self.background.switch_to_elevator_lobby()
                     # Position player 10px from right edge after switching
                     self.player_x = SCREEN_WIDTH - TEN
-                elif self.mediator.current_background == "elevator_lobby":
+                elif self.background.current_background == "elevator_lobby":
                     self.background.switch_to_frontdesk()
                     # Position player 10px from right edge after switching
                     self.player_x = SCREEN_WIDTH - TEN
                 # Handle corridor transitions when on elevator floors (moving left)
-                elif self.mediator.current_background.startswith("elevator_floor"):
+                elif self.background.current_background.startswith("elevator_floor"):
                     # Extract floor number from background name
                     try:
-                        floor_num = int(self.mediator.current_background.replace("elevator_floor", ""))
+                        floor_num = int(self.background.current_background.replace("elevator_floor", ""))
                         next_corridor = self.background.get_next_corridor_left(floor_num, self.background.current_corridor)
                         if next_corridor is not None:
                             # Switch to previous corridor (last one when coming from elevator)
@@ -448,10 +448,10 @@ class Player():
                             pass
                     except ValueError:
                         pass  # Invalid floor number format
-                elif self.mediator.current_background.startswith("corridor"):
+                elif self.background.current_background.startswith("corridor"):
                     # Extract floor and corridor numbers from background name (e.g., "corridor1_floor3")
                     try:
-                        parts = self.mediator.current_background.split("_")
+                        parts = self.background.current_background.split("_")
                         corridor_num = int(parts[0].replace("corridor", ""))
                         floor_num = int(parts[1].replace("floor", ""))
                         next_corridor = self.background.get_next_corridor_left(floor_num, corridor_num)
@@ -531,7 +531,7 @@ class Player():
         
         # Draw elevator prompt if in any elevator_open background
         if (self.background and 
-            self.mediator.current_background.startswith("elevator_open") and
+            self.background.current_background.startswith("elevator_open") and
             self.show_elevator_prompt):
             self._draw_elevator_prompt()
 
@@ -547,7 +547,7 @@ class Player():
         # any elevator floor background (elevator_floorX or elevator_open_floorX), or any corridor
         # normal otherwise
         if self.background:
-            bg = self.mediator.current_background
+            bg = self.background.current_background
             is_large_bg = (bg == "frontdesk" or 
                           bg == "elevator_lobby" or
                           bg == "elevator_open_lobby" or
@@ -633,7 +633,7 @@ class Player():
         if (self.elevator_floor_selection_time is not None and 
             self.selected_floor is not None and
             self.background and
-            self.mediator.current_background.startswith("elevator_open")):
+            self.background.current_background.startswith("elevator_open")):
             current_time = pygame.time.get_ticks()
             # 1000 milliseconds = 1 second
             if current_time - self.elevator_floor_selection_time >= 1000:
@@ -656,7 +656,7 @@ class Player():
             bool: True if input was handled, False otherwise.
         """
         if (not self.background or 
-            not self.mediator.current_background.startswith("elevator_open") or
+            not self.background.current_background.startswith("elevator_open") or
             not self.show_elevator_prompt):
             return False
         
@@ -671,7 +671,6 @@ class Player():
                     self.show_elevator_prompt = False
                     self.selected_floor = None
                     self.elevator_floor_selection_time = None
-                    self.notify('Switched to elevator lobby.')
                     return True
                 
                 # For floors 3-9, select the floor
