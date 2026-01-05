@@ -67,7 +67,7 @@ Background images for different hotel scenes:
 
 **Naming Convention:**
 - `*_normal.png` - Standard resolution images
-- `*_large.png` - Higher resolution images (for future use)
+- `*_large.png` - Higher resolution images (for indoor scene use)
 
 #### `items/`
 Game item sprites:
