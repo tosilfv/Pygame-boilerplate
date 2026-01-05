@@ -19,6 +19,10 @@ Contains font files:
 ### `graphics/`
 Contains all visual assets organized by category:
 
+**Naming Convention:**
+- `*_normal.png` - Standard resolution images
+- `*_large.png` - Higher resolution images (for indoor scene use)
+
 #### `hotel/`
 Background images for different hotel scenes:
 - `corridor2_large.png` - Sky surface for corridor 2 scene
@@ -64,10 +68,6 @@ Background images for different hotel scenes:
 - `rooms_floor9_corridor3_large.png` - Sky surface for floor 9 corridor 3 scene
 - `rooms_floor9_corridor4_large.png` - Sky surface for floor 9 corridor 4 scene
 - `yard_normal.png` - Sky surface for yard scene
-
-**Naming Convention:**
-- `*_normal.png` - Standard resolution images
-- `*_large.png` - Higher resolution images (for indoor scene use)
 
 #### `items/`
 Game item sprites:
