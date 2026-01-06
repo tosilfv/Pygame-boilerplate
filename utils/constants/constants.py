@@ -20,7 +20,7 @@ SCREEN_HEIGHT = 400
 SCREEN_WIDTH = 800
 
 # Physics Constants
-GRAVITY_MAX = -150
+GRAVITY_MAX = -50
 GROUND_LEVEL = 320
 
 # Positioning Constants

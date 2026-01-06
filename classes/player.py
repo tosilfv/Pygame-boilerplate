@@ -9,9 +9,10 @@ edges.
 
 import pygame
 import os
-from utils.constants.constants import FIVE, GRAVITY_MAX, GROUND_LEVEL,\
-    HUNDRED, PLAYER_X, PLAYER_Y, POINT_ONE, PURPLE, SCREEN_WIDTH,\
-    SCREEN_HEIGHT, SCREEN_LIMIT_L, SCREEN_LIMIT_R, TEN, ZERO
+from utils.constants.constants import FIVE,\
+    GRAVITY_MAX, GROUND_LEVEL,HUNDRED, PLAYER_X, PLAYER_Y, POINT_ONE,\
+    PURPLE, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_LIMIT_L, SCREEN_LIMIT_R, TEN,\
+    ZERO
 from utils.helpers import helpers
 
 # Initialize Pygame
@@ -31,15 +32,19 @@ class Player():
         mediator: Mediator instance for inter-object communication.
         screen: Screen instance for drawing operations.
         background: Background instance for scene transition triggers.
+        facing_left (bool): Whether player is facing left.
+        moving_down (bool): Whether player is currently falling downward.
         moving_horizontally (bool): Whether player is currently moving left/right.
         moving_up (bool): Whether player is currently jumping upward.
-        moving_down (bool): Whether player is currently falling downward.
+        show_player (bool): Whether player image is shown.
         gravity (int): Current gravity value affecting vertical movement.
         player_x (int): Current X position of the player.
         player_y (int): Current Y position of the player.
-        walk_index (float): Animation index for walking animation.
-        facing_left (bool): Whether player is facing left.
         prev_player_x (int): Previous X position for edge detection.
+        walk_index (float): Animation index for walking animation.
+        selected_floor (int or None): Number of selected floor or None.
+        show_elevator_prompt (bool): Timer for floor selection delay.
+        elevator_floor_selection_time (bool): Whether elevator prompt is visible.
         jump_image: Surface for jump animation (right-facing).
         stand_image: Surface for standing animation (right-facing).
         walking: List of surfaces for walking animation (right-facing).
@@ -56,20 +61,21 @@ class Player():
         self.mediator = mediator
         self.screen = screen
         self.background = background
+        self.facing_left = False
+        self.moving_down = False
         self.moving_horizontally = False
         self.moving_up = False
-        self.moving_down = False
-        self.facing_left = False  # Track direction
+        self.show_player = True
         self.gravity = ZERO
         self.player_x = PLAYER_X
         self.player_y = PLAYER_Y
+        self.prev_player_x = PLAYER_X
         self.walk_index = ZERO
-        self.prev_player_x = PLAYER_X  # Track previous position for edge detection
         
         # Elevator input state
         self.selected_floor = None
         self.show_elevator_prompt = False
-        self.elevator_floor_selection_time = None  # Timer for floor selection delay
+        self.elevator_floor_selection_time = None
         
         # Font for elevator prompt
         font_path = os.path.join(
@@ -326,6 +332,7 @@ class Player():
             if previous_background == "elevator_lobby" and self.background.current_background == "elevator_open_lobby":
                 self.play_sound(self.hissi_sound)
                 self.show_elevator_prompt = True
+                self.show_player = False
                 self.selected_floor = None
         
         # Check if player is at center and up arrow is pressed on any elevator floor
@@ -498,7 +505,7 @@ class Player():
             # JUMP:
                 # Gravity Cumulative -10
                 # Fly Until At Vertical Top Max
-            self.gravity += -TEN
+            self.gravity += -FIVE
             self.rect.bottom += self.gravity
         if self.gravity <= GRAVITY_MAX:
             # At Vertical Top Max
@@ -511,7 +518,7 @@ class Player():
             # Descending:
                 # Gravity Cumulative +10
                 # Fly Until At Ground Level
-            self.gravity += TEN
+            self.gravity += FIVE
             self.rect.bottom += self.gravity
         if self.moving_down and self.rect.bottom >= GROUND_LEVEL + FIVE:
             # At Ground Level:
