@@ -9,10 +9,9 @@ edges.
 
 import pygame
 import os
-from utils.constants.constants import FIVE,\
-    GRAVITY_MAX, GROUND_LEVEL,HUNDRED, PLAYER_X, PLAYER_Y, POINT_ONE,\
-    PURPLE, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_LIMIT_L, SCREEN_LIMIT_R, TEN,\
-    ZERO
+from utils.constants.constants import (FIVE, GRAVITY_MAX, GROUND_LEVEL,
+    HUNDRED, PLAYER_X, PLAYER_Y, POINT_ONE, PURPLE, SCREEN_WIDTH,
+    SCREEN_HEIGHT, SCREEN_LIMIT_L, SCREEN_LIMIT_R, TEN,ZERO)
 from utils.helpers import helpers
 
 # Initialize Pygame
@@ -22,12 +21,12 @@ pygame.init()
 class Player():
     """
     Represents the player character (Piccolo) in the game.
-    
+
     The Player class handles all player interactions including keyboard
     input, movement, jumping with gravity physics, animation states,
     and sound effects. It communicates with the Background class to
     trigger scene transitions when reaching screen edges.
-    
+
     Attributes:
         mediator: Mediator instance for inter-object communication.
         screen: Screen instance for drawing operations.
@@ -36,7 +35,6 @@ class Player():
         moving_down (bool): Whether player is currently falling downward.
         moving_horizontally (bool): Whether player is currently moving left/right.
         moving_up (bool): Whether player is currently jumping upward.
-        show_player (bool): Whether player image is shown.
         gravity (int): Current gravity value affecting vertical movement.
         player_x (int): Current X position of the player.
         player_y (int): Current Y position of the player.
@@ -45,16 +43,31 @@ class Player():
         selected_floor (int or None): Number of selected floor or None.
         show_elevator_prompt (bool): Timer for floor selection delay.
         elevator_floor_selection_time (bool): Whether elevator prompt is visible.
-        jump_image: Surface for jump animation (right-facing).
-        stand_image: Surface for standing animation (right-facing).
-        walking: List of surfaces for walking animation (right-facing).
-        jump_image_left: Surface for jump animation (left-facing).
-        stand_image_left: Surface for standing animation (left-facing).
-        walking_left: List of surfaces for walking animation (left-facing).
+        jump_image_normal: Surface for jump animation (right-facing) normal size.
+        stand_image_normal: Surface for standing animation (right-facing) normal size.
+        walk_image_1_normal: Surface for walking animation (right-facing) frame 1 normal size.
+        walk_image_2_normal: Surface for walking animation (right-facing) frame 2 normal size.
+        walking_normal: List of surfaces for walking animation (right-facing) normal size.
+        jump_image_large: Surface for jump animation (right-facing) large size.
+        stand_image_large: Surface for standing animation (right-facing) large size.
+        walk_image_1_large: Surface for walking animation (right-facing) frame 1 large size.
+        walk_image_2_large: Surface for walking animation (right-facing) frame 2 large size.
+        walking_large: List of surfaces for walking animation (right-facing) large size.
+        jump_image_left_normal: Surface for jump animation (left-facing) normal size.
+        stand_image_left_normal: Surface for standing animation (left-facing) normal size.
+        walk_image_1_left_normal: Surface for walking animation (left-facing) frame 1 normal size.
+        walk_image_2_left_normal: Surface for walking animation (left-facing) frame 2 normal size.
+        walking_left_normal: List of surfaces for walking animation (left-facing) normal size.
+        jump_image_left_large: Surface for jump animation (left-facing) large size.
+        stand_image_left_large: Surface for standing animation (left-facing) large size.
+        walk_image_1_left_large: Surface for walking animation (left-facing) frame 1 large size.
+        walk_image_2_left_large: Surface for walking animation (left-facing) frame 2 large size.
+        walking_left_large: List of surfaces for walking animation (left-facing) large size.
         image: Currently active image surface.
         rect: Pygame Rect object for collision detection and positioning.
         music: Background music sound object.
         jump_sound: Jump sound effect object.
+        hissi_sound: Elevator sound effect object.
     """
 
     def __init__(self, mediator, screen, background=None):
@@ -65,18 +78,17 @@ class Player():
         self.moving_down = False
         self.moving_horizontally = False
         self.moving_up = False
-        self.show_player = True
         self.gravity = ZERO
         self.player_x = PLAYER_X
         self.player_y = PLAYER_Y
         self.prev_player_x = PLAYER_X
         self.walk_index = ZERO
-        
+
         # Elevator input state
         self.selected_floor = None
         self.show_elevator_prompt = False
         self.elevator_floor_selection_time = None
-        
+
         # Font for elevator prompt
         font_path = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
@@ -87,7 +99,7 @@ class Player():
             self.font = pygame.font.Font(font_path, 30)
         except:
             self.font = pygame.font.Font(None, 30)
-        
+
         # Normal (right-facing) images
         self.jump_image_normal = helpers.load_image(
             os.path.join(
@@ -118,7 +130,7 @@ class Player():
                 "player",
                 "piccolo_walk2_normal.png"))
         self.walking_normal = [walk_image_1_normal, walk_image_2_normal]
-        
+
         # Large (right-facing) images
         self.jump_image_large = helpers.load_image(
             os.path.join(
@@ -149,7 +161,7 @@ class Player():
                 "player",
                 "piccolo_walk2_large.png"))
         self.walking_large = [walk_image_1_large, walk_image_2_large]
-        
+
         # Normal left-facing images
         self.jump_image_left_normal = helpers.load_image(
             os.path.join(
@@ -179,9 +191,8 @@ class Player():
                 "graphics",
                 "player",
                 "piccolo_left_walk2_normal.png"))
-        self.walking_left_normal = \
-                        [walk_image_1_left_normal, walk_image_2_left_normal]
-        
+        self.walking_left_normal = [walk_image_1_left_normal, walk_image_2_left_normal]
+
         # Large left-facing images
         self.jump_image_left_large = helpers.load_image(
             os.path.join(
@@ -211,9 +222,8 @@ class Player():
                 "graphics",
                 "player",
                 "piccolo_left_walk2_large.png"))
-        self.walking_left_large = \
-                        [walk_image_1_left_large, walk_image_2_left_large]
-        
+        self.walking_left_large = [walk_image_1_left_large, walk_image_2_left_large]
+
         # Set initial images (using normal by default)
         self.image = self.stand_image_normal
 
@@ -244,7 +254,7 @@ class Player():
                 "audio",
                 "hissi.wav"))
         self.hissi_sound.set_volume(POINT_ONE)
-        
+
         self.notify('Player was created.')
 
     @property
@@ -292,7 +302,7 @@ class Player():
             and self.show_elevator_prompt):
             self.show_elevator_prompt = False
             self.selected_floor = None
-        
+
         keys = pygame.key.get_pressed()
 
         # Move
@@ -306,20 +316,20 @@ class Player():
             self.facing_left = False
         else:
             self.moving_horizontally = False
-        
+
         # Check if player is at center and up arrow is pressed
         # Center is approximately SCREEN_WIDTH / 2 (400), with some tolerance
         center_tolerance = HUNDRED  # Allow player to be within 100px of center
         center_min = SCREEN_WIDTH // 2 - center_tolerance
         center_max = SCREEN_WIDTH // 2 + center_tolerance
-        
+
         if (keys[pygame.K_UP] and 
             self.background and 
             self.background.current_background == "entrance" and
             center_min <= self.player_x <= center_max):
             self.background.switch_to_frontdesk()
             self.change_music("musa2.wav")
-        
+
         # Check if player is at center and up arrow is pressed in elevator lobby
         if (keys[pygame.K_UP] and 
             self.background and 
@@ -329,12 +339,12 @@ class Player():
             previous_background = self.background.current_background
             self.background.switch_to_elevator_open_lobby()
             # Play sound only if the switch actually happened (background changed)
-            if previous_background == "elevator_lobby" and self.background.current_background == "elevator_open_lobby":
+            if (previous_background == "elevator_lobby" and 
+                self.background.current_background == "elevator_open_lobby"):
                 self.play_sound(self.hissi_sound)
                 self.show_elevator_prompt = True
-                self.show_player = False
                 self.selected_floor = None
-        
+
         # Check if player is at center and up arrow is pressed on any elevator floor
         if (keys[pygame.K_UP] and 
             self.background and 
@@ -367,8 +377,7 @@ class Player():
             self.player_x = SCREEN_WIDTH - SCREEN_LIMIT_R
             # Switch background when reaching right edge (only if just crossed
             # threshold)
-            if self.background and self.prev_player_x <= SCREEN_WIDTH\
-                                                            - SCREEN_LIMIT_R:
+            if self.background and self.prev_player_x <= SCREEN_WIDTH - SCREEN_LIMIT_R:
                 if self.background.current_background == "entrance":
                     self.background.switch_to_yard()
                     # Position player 10px from left edge after switching
@@ -679,7 +688,7 @@ class Player():
                     self.selected_floor = None
                     self.elevator_floor_selection_time = None
                     return True
-                
+
                 # For floors 3-9, select the floor
                 self.selected_floor = floor
                 # Start timer for 1 second delay before switching background

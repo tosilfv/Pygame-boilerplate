@@ -17,9 +17,9 @@ class TestMain:
             del sys.modules['main']
         
         # Mock pygame to avoid initialization
-        with patch('pygame.event.get', return_value=[]), \
-             patch('pygame.quit'), \
-             patch('sys.exit'):
+        with (patch('pygame.event.get', return_value=[]),
+             patch('pygame.quit'),
+             patch('sys.exit')):
             # Import should work without running the loop
             import main
             assert main is not None

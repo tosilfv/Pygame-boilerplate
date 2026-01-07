@@ -33,6 +33,16 @@ class Background():
         entrance_sky_surf: Surface for entrance sky.
         yard_ground_surf: Surface for yard ground.
         yard_sky_surf: Surface for yard sky.
+        frontdesk_ground_surf: Surface for frontdesk ground.
+        frontdesk_sky_surf: Surface for frontdesk sky.
+        elevator_lobby_ground_surf: Surface for lobby ground.
+        elevator_lobby_sky_surf: Surface for lobby sky.
+        elevator_open_lobby_ground_surf: Surface for open lobby ground.
+        elevator_open_lobby_sky_surf: Surface for open lobby sky.
+        corridor_ground_surfs: {(floor_num, corridor_num): surface}.
+        corridor_sky_surfs: {(floor_num, corridor_num): surface}.
+        current_floor: Current floor number (3-9)
+        current_corridor: Current corridor number (1, 2, 3, 4, or None for elevator)
         ground_surf: Currently active ground surface.
         sky_surf: Currently active sky surface.
     """
@@ -44,7 +54,7 @@ class Background():
         self.ground_y = GROUND_Y
         self.sky_x = SKY_X
         self.sky_y = SKY_Y
-        self.current_background = "entrance"  # Track current background
+        self.current_background = "entrance"
         self.notify('Background was created.')
 
         # Initial background (entrance)
@@ -140,16 +150,16 @@ class Background():
                 floor_image_name)
             # Only load if file exists (floors 1-2 may not exist)
             if os.path.exists(floor_image_path):
-                self.elevator_floor_ground_surfs[floor_num] = \
+                self.elevator_floor_ground_surfs[floor_num] = (
                     helpers.load_image(
                     os.path.join(
                         os.path.dirname(os.path.dirname(__file__)),
                         "media",
                         "graphics",
                         "hotel",
-                        "indoors_ground_large.png"))
-                self.elevator_floor_sky_surfs[floor_num] = \
-                    helpers.load_image(floor_image_path)
+                        "indoors_ground_large.png")))
+                self.elevator_floor_sky_surfs[floor_num] = (
+                    helpers.load_image(floor_image_path))
         
         # Elevator open floor backgrounds (1-9)
         self.elevator_open_floor_ground_surfs = {}
@@ -164,28 +174,27 @@ class Background():
                 floor_open_image_name)
             # Only load if file exists (floors 1-2 may not exist)
             if os.path.exists(floor_open_image_path):
-                self.elevator_open_floor_ground_surfs[floor_num] = \
+                self.elevator_open_floor_ground_surfs[floor_num] = (
                     helpers.load_image(
                     os.path.join(
                         os.path.dirname(os.path.dirname(__file__)),
                         "media",
                         "graphics",
                         "hotel",
-                        "indoors_ground_large.png"))
-                self.elevator_open_floor_sky_surfs[floor_num] = \
-                    helpers.load_image(floor_open_image_path)
+                        "indoors_ground_large.png")))
+                self.elevator_open_floor_sky_surfs[floor_num] = (
+                    helpers.load_image(floor_open_image_path))
         
         # Corridor backgrounds for floors 3-9 (corridors 1, 2, 3, 4)
-        self.corridor_ground_surfs = {}  # {(floor_num, corridor_num): surface}
-        self.corridor_sky_surfs = {}     # {(floor_num, corridor_num): surface}
+        self.corridor_ground_surfs = {}
+        self.corridor_sky_surfs = {}
         corridor_numbers = [1, 2, 3, 4]  # Corridors that exist
         for floor_num in range(3, 10):
             for corridor_num in corridor_numbers:
                 if corridor_num == 2:
                     corridor_image_name = "corridor2_large.png"
                 else:
-                    corridor_image_name = \
-                    f"rooms_floor{floor_num}_corridor{corridor_num}_large.png"
+                    corridor_image_name = f"rooms_floor{floor_num}_corridor{corridor_num}_large.png"
                 corridor_image_path = os.path.join(
                     os.path.dirname(os.path.dirname(__file__)),
                     "media",
@@ -194,20 +203,20 @@ class Background():
                     corridor_image_name)
                 # Only load if file exists
                 if os.path.exists(corridor_image_path):
-                    self.corridor_ground_surfs[(floor_num, corridor_num)] = \
+                    self.corridor_ground_surfs[(floor_num, corridor_num)] = (
                         helpers.load_image(
                         os.path.join(
                             os.path.dirname(os.path.dirname(__file__)),
                             "media",
                             "graphics",
                             "hotel",
-                            "indoors_ground_large.png"))
-                    self.corridor_sky_surfs[(floor_num, corridor_num)] = \
-                        helpers.load_image(corridor_image_path)
+                            "indoors_ground_large.png")))
+                    self.corridor_sky_surfs[(floor_num, corridor_num)] = (
+                        helpers.load_image(corridor_image_path))
         
         # Track current floor and corridor for navigation
-        self.current_floor = None  # Current floor number (3-9)
-        self.current_corridor = None  # Current corridor number (1, 2, 3, 4, or None for elevator)
+        self.current_floor = None
+        self.current_corridor = None
         
         # Set initial surfaces
         self.ground_surf = self.entrance_ground_surf
@@ -235,8 +244,7 @@ class Background():
         currently at yard or frontdesk. Updates ground and sky surfaces
         accordingly and notifies the mediator of the change.
         """
-        if self.current_background == "yard" or \
-                self.current_background == "frontdesk":
+        if self.current_background == "yard" or self.current_background == "frontdesk":
             self.current_background = "entrance"
             self.ground_surf = self.entrance_ground_surf
             self.sky_surf = self.entrance_sky_surf
@@ -250,8 +258,7 @@ class Background():
         frontdesk if currently at entrance or elevator_lobby. Updates ground
         and sky surfaces accordingly and notifies the mediator of the change.
         """
-        if self.current_background == "entrance" or \
-                self.current_background == "elevator_lobby":
+        if self.current_background == "entrance" or self.current_background == "elevator_lobby":
             self.current_background = "frontdesk"
             self.ground_surf = self.frontdesk_ground_surf
             self.sky_surf = self.frontdesk_sky_surf
@@ -304,9 +311,9 @@ class Background():
         # Check if current background is any elevator_open background or a corridor on the same floor
         is_elevator_open = (self.current_background == "elevator_open_lobby" or
                     self.current_background.startswith("elevator_open_floor"))
-        is_corridor_on_same_floor = \
+        is_corridor_on_same_floor = (
                         (self.current_background.startswith("corridor") and
-                            self.current_floor == floor_num)
+                                            self.current_floor == floor_num))
         
         if ((is_elevator_open or is_corridor_on_same_floor) and 
             floor_num in self.elevator_floor_ground_surfs and 
@@ -352,12 +359,10 @@ class Background():
             floor_num (int): Floor number (3-9).
             corridor_num (int): Corridor number (1, 3, or 4).
         """
-        if (floor_num, corridor_num) in self.corridor_ground_surfs and \
-           (floor_num, corridor_num) in self.corridor_sky_surfs:
-            self.current_background = \
-                f"corridor{corridor_num}_floor{floor_num}"
-            self.ground_surf = \
-                self.corridor_ground_surfs[(floor_num, corridor_num)]
+        if ((floor_num, corridor_num) in self.corridor_ground_surfs and 
+           (floor_num, corridor_num) in self.corridor_sky_surfs):
+            self.current_background = f"corridor{corridor_num}_floor{floor_num}"
+            self.ground_surf = self.corridor_ground_surfs[(floor_num, corridor_num)]
             self.sky_surf = self.corridor_sky_surfs[(floor_num, corridor_num)]
             self.current_floor = floor_num
             self.current_corridor = corridor_num

@@ -184,9 +184,9 @@ class TestPlayer:
         
         player = Player(mediator, mock_screen)
         
-        with patch.object(player, 'player_input') as mock_input, \
-             patch.object(player, 'apply_gravity') as mock_gravity, \
-             patch.object(player, 'animate') as mock_animate:
+        with (patch.object(player, 'player_input') as mock_input,
+             patch.object(player, 'apply_gravity') as mock_gravity,
+             patch.object(player, 'animate') as mock_animate):
             player.update()
             
             mock_input.assert_called_once()

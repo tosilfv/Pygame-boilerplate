@@ -20,18 +20,6 @@ where the Mediator is notified of any actions in the game by the game<br />
 objects. Mediator then notifies the relevant game objects in return to<br />
 react to these actions.<br />
 
-## Instructions
-
-TODO
-
-## Ohjeet
-
-TEE
-
-## N.B.
-
-TODO
-
 ## Testing
 
 Install pytest: pip install -r requirements-dev.txt<br />
