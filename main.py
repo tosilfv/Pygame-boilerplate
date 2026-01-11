@@ -8,7 +8,7 @@ to the Game class. The game continues running until the user closes the window.
 import pygame
 from sys import exit
 from control.game import game
-from utils.variables import (running)
+running = True
 
 # Game Loop
 if __name__ == "__main__":

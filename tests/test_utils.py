@@ -80,11 +80,3 @@ class TestHelpers:
         res = load_image("test.png")
         assert isinstance(res, pygame.Surface)
         assert res.get_size() == (100, 100)
-
-class TestVariables:
-    """Test variable values"""
-    
-    def test_boolean_variables(self):
-        """Test boolean variables"""
-        from utils.variables import (running)
-        assert running == True
